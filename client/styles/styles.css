@@ -82,3 +82,33 @@ form input[type=text] {
 .spinner img {
     padding: 10px;
 }
+
+div#chat-form input[type='text'] {
+    width: 100%;
+}
+
+div#chat-form input[type='submit'] {
+    float: right;
+}
+
+div#chat-form .your-name {
+    font-size: 12px;
+}
+
+div.message .userId {
+    display: block;
+    margin-bottom:4px;
+}
+
+div.message .messageText {
+    font-size: 14px;
+}
+
+div.message {
+    padding: 10px;
+    font-size: 12px;
+}
+
+div.message:nth-child(odd) {
+    background-color: #f0f0f0;
+}

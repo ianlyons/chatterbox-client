@@ -6,6 +6,7 @@ if (!/(&|\?)username=/.test(window.location.search)) {
   }
   newSearch += 'username=' + (prompt('What is your name?') || 'anonymous');
   window.location.search = newSearch;
+  window.username = newSearch;
 }
 // Don't worry about this code, it will ensure that your ajax calls are allowed by the browser
 $.ajaxPrefilter(function (settings, _, jqXHR) {
