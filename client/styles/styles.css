@@ -1,3 +1,5 @@
+/* Blody & global styles */
+
 body {
     background: #eee;
     text-align: center;
@@ -5,8 +7,10 @@ body {
     font-family: arial, sans-serif;
 }
 
+/* Structural styling */
+
 #main {
-    width: 500px;
+    width: 700px;
     margin: auto;
     text-align: left;
     background: white;
@@ -20,6 +24,7 @@ body {
     font-size: 35px;
     margin-bottom: 5px;
     padding: 5px;
+    padding-left: 0;
 }
 
 #main h1 span {
@@ -27,7 +32,7 @@ body {
 }
 
 #main ul {
-    padding-left: 20px;
+    padding-left: 0;
 }
 
 #main .error {
@@ -44,6 +49,16 @@ body {
     font-size: 12px;
     color: green;
     line-height: 13px;
+}
+
+#left {
+    float: left;
+    width: 500px;
+}
+
+#right {
+    float: left;
+    margin-left: 40px;
 }
 
 form {
@@ -88,6 +103,10 @@ div#chat-form input[type='text'] {
     width: 482px;
 }
 
+#chat-form {
+    width:500px;
+}
+
 div#chat-form input[type='button'] {
     float: right;
 }
@@ -96,8 +115,9 @@ div#chat-form .your-name {
     font-size: 12px;
 }
 
-#room span {
+#room {
     font-size: 12px;
+    width: 500px;
 }
 
 #newRoom {
@@ -135,4 +155,51 @@ abbr.time {
     text-align:right;
     height: 14px;
     margin-top:4px;
+}
+
+span.userId {
+    cursor: pointer;
+}
+
+span.userId span.newFriend {
+    margin-top: 3px;
+    margin-right: 5px;
+    padding: 0 3px;
+    border-radius: 3px;
+    background-color: #fff;
+    border: solid #4d4d4d 1px;
+    font-size: 12px;
+}
+
+.friends {
+    list-style-type: none;
+    font-size: 12px;
+}
+
+.friends li {
+    margin-bottom: 12px;
+}
+
+.friends li span.last-room {
+    font-size: 10px;
+    margin-bottom: 3px;
+    display: block;
+}
+
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.cf {
+    *zoom: 1;
 }

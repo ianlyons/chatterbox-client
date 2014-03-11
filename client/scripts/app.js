@@ -1,7 +1,19 @@
 /* global $, _, moment */
 
-// YOUR CODE HERE:
 var app = {};
+app.chatrooms = {
+  'roomSelected' : false,
+  'currentRoom' : '-- Select a room! --',
+  'allRooms' : {
+  }
+};
+app.friends = {};
+
+app.stripHTML = function(html) {
+  var tmp = document.createElement("DIV");
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || "";
+};
 
 app.getURLParameter = function(sParam) {
   var sPageURL = window.location.search.substring(1);
@@ -13,6 +25,8 @@ app.getURLParameter = function(sParam) {
     }
   }
 };
+
+app.username = app.getURLParameter('username');
 
 app.send = function (message) {
   $.ajax({
@@ -31,7 +45,6 @@ app.send = function (message) {
   });
 };
 
-
 app.fetch = function() {
   $.ajax({
     url: 'https://api.parse.com/1/classes/chatterbox',
@@ -45,6 +58,7 @@ app.fetch = function() {
       }
     },
     success: function(data) {
+      console.log(data);
       if(app.chatrooms.roomSelected) {
         app.appendMessages(data);
       }
@@ -57,42 +71,39 @@ app.fetch = function() {
   });
 };
 
-app.stripHTML = function(html) {
-  var tmp = document.createElement("DIV");
-  tmp.innerHTML = html;
-  return tmp.textContent || tmp.innerText || "";
-};
-
 app.appendMessages = function(messages) {
-  if(app.lastFetch === undefined) {
-    _.each(messages.results, function(item) {
-      $('#container').append('<div class="message" data-room="'+ app.stripHTML(item.roomname) +
-        '"><span class="userId">'+app.stripHTML(item.username)+
-        ':</span><span class="messageText">'+ app.stripHTML(item.text) +
-        '</span><abbr class="time">'+ moment(new Date(item.createdAt)).fromNow() + '</div>');
-    });
-  } else {
     var index = 0;
-    while(new Date(messages.results[index].createdAt) > app.lastFetch){
+    while(index < messages.results.length && new Date(messages.results[index].createdAt) > app.lastFetch){
       index++;
     }
     for(index; index > 0; index--){
       var item = messages.results[index - 1];
-      $('#container').prepend('<div class="message" data-room="'+ app.stripHTML(item.roomname) +
-        '"><span class="userId">'+app.stripHTML(item.username)+
-        ':</span><span class="messageText">'+ app.stripHTML(item.text) +
-        '</span><abbr class="time">'+ moment(new Date(item.createdAt)).fromNow() + '</div>');
+      if(app.friends[app.stripHTML(item.username)] === undefined){
+        var nameString = app.stripHTML(item.username);
+      } else {
+        var nameString = '<b>'+app.stripHTML(item.username)+'</b>';
+      }
+      $('#container').prepend('<div class="message" data-room="'+
+        app.stripHTML(item.roomname) +
+        '"><span class="userId" data-user="'+app.stripHTML(item.username)+
+        '"><span class="newFriend">+</span>'+
+        nameString+
+        ':</span><span class="messageText">'+
+        app.stripHTML(item.text) +
+        '</span><abbr class="time">'+
+        moment(new Date(item.createdAt)).fromNow() +
+        '</div>');
     }
-  }
-};
 
-app.username = app.getURLParameter('username');
+    if($('.new-room')) {
+      $('.new-room').remove();
+    }
+};
 
 app.getRooms = function(data) {
   _.each(data.results, function(item) {
     app.chatrooms.allRooms[app.stripHTML(item.roomname)] = true;
   });
-
 
   $('#room select').empty();
   $('#room select').append('<option selected value="' + app.chatrooms.currentRoom + '">' + app.chatrooms.currentRoom +'</option>');
@@ -103,12 +114,33 @@ app.getRooms = function(data) {
   }
 };
 
-app.chatrooms = {
-  'roomSelected' : false,
-  'currentRoom' : '-- Select a room! --',
-  'allRooms' : {
+app.addFriend = function(name) {
+  var truncate = function(string, maxLen) {
+    if(string.length > maxLen) {
+      return string.substring(0,maxLen) + "...";
+    } else {
+      return string;
+    }
+  };
 
+  if(app.friends[name] === undefined){
+    app.friends[name] = truncate(name, 21);
+    $('.friends').append('<li>'+app.friends[name]+'<span class="last-room">Last room: hello!</span></li>');
   }
+};
+
+app.sendMessage = function() {
+  var text = $('#chatText').val();
+  var message =  {
+    'username': app.username,
+    'text': text,
+    'roomname': app.chatrooms.currentRoom
+  };
+  app.send(message);
+  $('#chatText').val('');
+  setTimeout(function() {
+    app.fetch();
+  }, 1200);
 };
 
 app.init = function() {
@@ -122,40 +154,28 @@ app.init = function() {
       app.chatrooms.roomSelected = true;
       app.chatrooms.currentRoom = $('#room select').val();
       $('#container').empty();
-      app.lastFetch = undefined;
+      app.lastFetch = 0;
       app.fetch();
     });
 
     $('#newRoom').on('click', function(e){
       e.preventDefault();
       var response = prompt('Where shall we go, sir?');
-      console.log(response);
+      if(response) {
+        app.lastFetch = 0;
+        app.chatrooms.roomSelected = true;
+        app.chatrooms.currentRoom = response;
+        $('#container').empty();
+        $('#container').append('<div class="new-room message">You\'re in a new room by yourself! Send a message so other people can find you.</div>');
+        $('#room select').append('<option selected value="' + app.chatrooms.currentRoom + '">' + app.chatrooms.currentRoom +'</option>');
+      }
+    });
+
+    $('body').on('click', '.userId', function(e){
+      e.preventDefault();
+      app.addFriend($(this).data('user'));
     });
   });
 };
-
-app.sendMessage = function() {
-  var text = $('#chatText').val();
-  var message =  {
-    'username': app.username,
-    'text': text,
-    'roomname': app.chatrooms.currentRoom
-  };
-
-  app.send(message);
-
-  $('#chatText').val('');
-  setTimeout(function() {
-    app.fetch();
-  }, 600);
-};
-
-
-
-// need to display the fetched results in a fun way
-// Need a form for user to send messages with
-
-
-
 
 app.init();
