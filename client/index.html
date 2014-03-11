@@ -8,7 +8,7 @@
     <!-- dependencies -->
     <script src="../bower_components/jquery/jquery.min.js"></script>
     <script src="../bower_components/underscore/underscore.js"></script>
-    <script src="../bower_components/smart-time-ago/lib/timeago.js"></script>
+    <script src="../bower_components/momentjs/moment.js"></script>
     <!-- your scripts -->
     <script src="scripts/config.js"></script>
     <script src="scripts/app.js"></script>
@@ -16,15 +16,23 @@
   <body>
     <div id="main">
       <h1>chatterbox</h1>
+      <div id="room">
+        <span>You're currently in:
+          <select></select>
+        <span>
+        <span id="newRoom">New room?</span>
+      </div>
       <div id="chat-form">
+        <form id="chat" onsubmit="app.sendMessage(); return false">
+          <input type="text" id="chatText" placeholder="Your message...">
+          <span class="your-name"></span>
+          <input type="button" onclick="app.sendMessage()" value="Send message">
+        </form>
       </div>
       <div id="container">
       </div>
     </div>
-    <script>
-      var username = app.getURLParameter('username');
-  console.log(username);
-  $('#chat-form').append('<form id="chat"> <input type="text" name="chat-text" placeholder="Your message..."><span class="your-name">You\'re logged in as: ' +username+'</span><input type="submit" value="Send message"> </form>');
-</script>
   </body>
 </html>
+
+

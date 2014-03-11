@@ -4,7 +4,8 @@
   "dependencies": {
     "jquery": "~2.0.3",
     "underscore": "~1.6.0",
-    "smart-time-ago": "~0.1.5"
+    "smart-time-ago": "~0.1.5",
+    "momentjs": "~2.5.1"
   },
   "ignore": [
     "**/.*",
